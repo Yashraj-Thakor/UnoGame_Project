@@ -4,10 +4,13 @@
  */
 package ca.sheridancollege.project;
 
+import java.util.ArrayList;
+
 public class UnoPlayer extends Player {
 
     private Hand hand;
 
+    // Constructor
     public UnoPlayer(String name) {
         super(name);
         this.hand = new Hand();
@@ -17,34 +20,52 @@ public class UnoPlayer extends Player {
         return hand;
     }
 
-    @Override
-    public void play() {
-        // Placeholder: handled by UnoGame
-    }
-
+    /**
+     * This method lets the player try to play a card.
+     * It checks if any card in hand matches the top card in color, number, or type.
+     */
     public UnoCard playCard(UnoCard topCard) {
-        for (Card c : hand.getCards()) {
-            UnoCard card = (UnoCard) c;
+        ArrayList<Card> cards = hand.getCards();
 
-            if (card instanceof NumberCard) {
-                NumberCard n = (NumberCard) card;
-                if (n.getColor() == topCard.getColor()
-                        || (topCard instanceof NumberCard
-                        && n.getNumber() == ((NumberCard) topCard).getNumber())) {
-                    hand.getCards().remove(card);
-                    return card;
-                }
-            } else if (card instanceof ActionCard) {
-                ActionCard a = (ActionCard) card;
-                if (a.getColor() == topCard.getColor()
-                        || a.getAction() == ActionCard.ActionType.WILD
-                        || a.getAction() == ActionCard.ActionType.WILD_DRAW_FOUR) {
-                    hand.getCards().remove(card);
-                    return card;
-                }
+        for (int i = 0; i < cards.size(); i++) {
+            UnoCard current = (UnoCard) cards.get(i);
+
+            
+            if (current.getColor() == topCard.getColor()
+                    || current instanceof ActionCard
+                    || current instanceof NumberCard && topCard instanceof NumberCard
+                    && ((NumberCard) current).getNumber() == ((NumberCard) topCard).getNumber()
+                    || current.getColor() == UnoCard.Color.WILD) {
+
+                cards.remove(i);
+                return current;
             }
         }
-        return null;
+        return null; // no playable card
+    }
+
+    /**
+     * Draws one card from the deck if no valid card is available.
+     */
+    public void drawCard(Deck deck) {
+        if (!deck.getCards().isEmpty()) {
+            UnoCard drawn = (UnoCard) deck.getCards().remove(0);
+            hand.getCards().add(drawn);
+        }
+    }
+
+    /**
+     * Method to play one full turn (used for potential automation)
+     */
+    @Override
+    public void play() {
+       
+    }
+
+    @Override
+    public String toString() {
+        return getName() + "'s hand: " + hand;
     }
 }
+
 
